@@ -1,26 +1,26 @@
 <template>
     <div>
         <el-row :gutter="20">
-            <el-col :span="8">
+            <el-col :span="24">
                 <el-table
                         :data="tableData"
                         stripe
                         style="width: 100%">
                     <el-table-column
-                            label="已激活"
-                            prop="is_active"
+                            label="事件名称"
+                            prop="recordName"
                             sortable
-                            width="100px">
+                            width="200px">
                         <template slot-scope="scope">
                             <el-tag type="success" style="cursor: pointer;" v-if="scope.row.is_active">已激活</el-tag>
                             <el-tag type="danger" style="cursor: pointer;" v-else>未激活</el-tag>
                         </template>
                     </el-table-column>
                     <el-table-column
-                            label="在线"
-                            prop="is_online"
+                            label="发生时间"
+                            prop="recordTime"
                             sortable
-                            width="100px">
+                            width="200px">
                         <template slot-scope="scope">
                             <el-tag v-if="scope.row.is_online === -1">查询中</el-tag>
                             <el-tag type="success" v-if="scope.row.is_online === 1">在线</el-tag>
@@ -28,21 +28,20 @@
                         </template>
                     </el-table-column>
                     <el-table-column
-                            label="标签名"
-                            prop="name"
+                            label="标签路径"
+                            prop="tagPath"
+                            width="250px"
                             sortable>
                     </el-table-column>
                     <el-table-column
-                            label="轨迹"
+                            label="事件描述"
+                            prop="recordDescription"
                             sortable>
                         <template slot-scope="scope">
                             <el-button size="mini" round class="el-icon-video-camera" @click="chosenTagId = scope.row.id"></el-button>
                         </template>
                     </el-table-column>
                 </el-table>
-            </el-col>
-            <el-col :span="16" style="padding: 20px;">
-                <div id="track-container"></div>
             </el-col>
         </el-row>
     </div>
@@ -192,7 +191,7 @@
                         }
                     })
                 }).catch(() => {
-                    this.$alert('表格数据加载失败，请重试！', '加载失败')
+                    // this.$alert('表格数据加载失败，请重试！', '加载失败')
                 })
             },
         }

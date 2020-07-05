@@ -18,22 +18,22 @@ api.interceptors.request.use(
         return Promise.reject(error)
     })
 
-api.interceptors.response.use(
-    response => {
-        return response
-    },
-    error => {
-        if (error.response) {
-            if (error.response.status === 401) {
-                localStorage.removeItem('Authorization')
-                this.$router.replace({
-                    path: '/login'
-                }).then()
-            }
-            return Promise.reject(error.response.data)
-        }
-        return Promise.reject()
-    }
-)
+// api.interceptors.response.use(
+//     response => {
+//         return response
+//     },
+//     error => {
+//         if (error.response) {
+//             if (error.response.status === 401) {
+//                 localStorage.removeItem('Authorization')
+//                 this.$router.replace({
+//                     path: '/login'
+//                 }).then()
+//             }
+//             return Promise.reject(error.response.data)
+//         }
+//         return Promise.reject()
+//     }
+// )
 
 export default api

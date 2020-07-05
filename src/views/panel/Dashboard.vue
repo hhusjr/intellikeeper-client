@@ -43,7 +43,7 @@
                 </el-row>
             </div>
             <div class="panel-content">
-                <RemoteMonitor @fetchedReaders="updateNumReaders" @fetchedTagsInfo="updateNumTags"></RemoteMonitor>
+                <RemoteMonitor @fetchedReaders="upNumReaders" @fetchedTagsInfo="upNumTags"></RemoteMonitor>
             </div>
         </div>
     </el-main>
@@ -109,10 +109,10 @@
             }
         },
         methods: {
-            'updateNumReaders'(readers) {
+            'upNumReaders'(readers) {
                 this.numReaders = readers.length
             },
-            'updateNumTags'(tags) {
+            'upNumTags'(tags) {
                 this.numTags = tags.length
             },
         },
