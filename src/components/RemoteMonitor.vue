@@ -26,12 +26,12 @@
                                         :on-success="handleAvatarSuccess"
                                         :before-upload="beforeAvatarUpload">
                                     <img v-if="imageUrl" :src="imageUrl" class="avatar">
-                                    <el-button type="primary" size="large" class="fill-btn el-icon-upload2" v-on:click="upData">上传图片</el-button>
+                                    <el-button type="success" size="large" class="fill-btn el-icon-upload2" v-on:click="upData">上传图片</el-button>
                                 </el-upload>
                             </el-col>
 
                             <el-col :span="12">
-                                <el-button type="info" style="width: 130px" class="el-icon-refresh" @click="locationReload()">点击刷新</el-button>
+                                <el-button type="primary" style="width: 130px" class="el-icon-refresh" @click="locationReload()">点击刷新</el-button>
                             </el-col>
 
                         </el-row>
@@ -44,7 +44,7 @@
                                 <el-input
                                         id="numberscale"
                                         type="number"
-                                        v-model="input"
+                                        v-model="inputScale"
                                         style="width: 270px;margin-left: 15px"
                                         placeholder="请输入比例尺"></el-input>
                             </el-col>
@@ -141,7 +141,7 @@
                 refreshLocationInterval: null,
                 imageUrl: '',
                 file:'',
-                input: '',
+                inputScale: '',
 
                 trackData:{
                     // id: track

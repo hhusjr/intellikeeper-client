@@ -11,21 +11,12 @@
                             prop="recordName"
                             sortable
                             width="200px">
-                        <template slot-scope="scope">
-                            <el-tag type="success" style="cursor: pointer;" v-if="scope.row.is_active">已激活</el-tag>
-                            <el-tag type="danger" style="cursor: pointer;" v-else>未激活</el-tag>
-                        </template>
                     </el-table-column>
                     <el-table-column
                             label="发生时间"
                             prop="recordTime"
                             sortable
                             width="200px">
-                        <template slot-scope="scope">
-                            <el-tag v-if="scope.row.is_online === -1">查询中</el-tag>
-                            <el-tag type="success" v-if="scope.row.is_online === 1">在线</el-tag>
-                            <el-tag type="info" v-if="scope.row.is_online === 0">离线</el-tag>
-                        </template>
                     </el-table-column>
                     <el-table-column
                             label="标签路径"
@@ -35,11 +26,7 @@
                     </el-table-column>
                     <el-table-column
                             label="事件描述"
-                            prop="recordDescription"
-                            sortable>
-                        <template slot-scope="scope">
-                            <el-button size="mini" round class="el-icon-video-camera" @click="chosenTagId = scope.row.id"></el-button>
-                        </template>
+                            prop="recordDescription">
                     </el-table-column>
                 </el-table>
             </el-col>
@@ -57,7 +44,18 @@
         name: 'Track',
         'data'() {
             return {
-                tableData: [],
+                tableData: [{
+                    'recordName': '000001',
+                    'recordTime': '09-01-22:00',
+                    'tagPath': '展馆A-分区A-标签A',
+                    'recordDescription': '信号丢失!'
+                }, {
+                    'recordName': '000002',
+                    'recordTime': '09-01-22:11',
+                    'tagPath': '展馆A-分区B-标签A',
+                    'recordDescription': '标签移动!'
+                }],
+
                 chosenTagId: -1,
                 track: null,
                 readers: [],
@@ -160,46 +158,42 @@
             }
         },
         methods: {
-            'getTableData'() {
-                this.tableData = []
-                let deviceId = localStorage.getItem('chosenDevice')
-                api.get(urls.tag, {
-                    params: {
-                        device: deviceId
-                    }
-                }).then((response) => {
-                    let tid_idx_mapping = {}
-
-                    let cnt = 0;
-                    for (let item of response.data) {
-                        this.tableData.push({
-                            'id': item['id'],
-                            'tid': item['tid'],
-                            'name': item['name'],
-                            'is_active': item['is_active'],
-                            'created': moment(item['created']).format('YYYY-MM-DD HH:mm:ss'),
-                            'is_online': -1
-                        })
-                        tid_idx_mapping[item['tid']] = cnt++;
-                    }
-
-                    api.get(urls.tag + 'info/?device=' + deviceId).then((response) => {
-                        for (let tag of response.data) {
-                            let idx = tid_idx_mapping[tag['tid']]
-                            this.tableData[idx]['is_online'] = tag['is_online'];
-                            this.$set(this.tableData, idx, this.tableData[idx])
-                        }
-                    })
-                }).catch(() => {
-                    // this.$alert('表格数据加载失败，请重试！', '加载失败')
-                })
-            },
+            // 'getTableData'() {
+            //     this.tableData = []
+            //     let deviceId = localStorage.getItem('chosenDevice')
+            //     api.get(urls.tag, {
+            //         params: {
+            //             device: deviceId
+            //         }
+            //     }).then((response) => {
+            //         let tid_idx_mapping = {}
+            //
+            //         let cnt = 0;
+            //         for (let item of response.data) {
+            //             this.tableData.push({
+            //                 'recordName': item['recordName'],
+            //                 'recordTime': moment(item['recordTime']).format('YYYY-MM-DD HH:mm:ss'),
+            //                 'tagName': item['tagName'],
+            //                 'recordDescription': item['recordDescription']
+            //             })
+            //             tid_idx_mapping[item['tid']] = cnt++;
+            //         }
+            //
+            //         api.get(urls.tag + 'info/?device=' + deviceId).then((response) => {
+            //             for (let tag of response.data) {
+            //                 let idx = tid_idx_mapping[tag['tid']]
+            //                 this.tableData[idx]['is_online'] = tag['is_online'];
+            //                 this.$set(this.tableData, idx, this.tableData[idx])
+            //             }
+            //         })
+            //     }).catch(() => {
+            //         // this.$alert('表格数据加载失败，请重试！', '加载失败')
+            //     })
+            // },
         }
     }
 </script>
 
 <style scoped>
-#track-container {
-    height: 400px;
-}
+#track-container {height: 400px;}
 </style>
