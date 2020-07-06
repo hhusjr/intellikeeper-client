@@ -15,9 +15,10 @@
 
                 <el-col :span="6">
 
+                    <!--上传设计图+比例尺-->
                     <div class="toolbar">
-                        <el-row :gutter="6">
-                            <el-col :span="11">
+                        <el-row :gutter="4">
+                            <el-col :span="12">
                                 <el-upload
                                         class="toolbar"
                                         action="https://jsonplaceholder.typicode.com/posts/"
@@ -30,8 +31,25 @@
                             </el-col>
 
                             <el-col :span="12">
-                                <el-input id="numberscale" type="number" v-model="input" placeholder="请输入比例尺"></el-input>
+                                <el-button type="info" style="width: 130px" class="el-icon-refresh" @click="locationReload()">点击刷新</el-button>
                             </el-col>
+
+                        </el-row>
+                    </div>
+
+                    <!--显示轨迹与刷新-->
+                    <div class="toolbar">
+                        <el-row :gutter="20">
+                            <el-col :span="24">
+                                <el-input
+                                        id="numberscale"
+                                        type="number"
+                                        v-model="input"
+                                        style="width: 270px;margin-left: 15px"
+                                        placeholder="请输入比例尺"></el-input>
+                            </el-col>
+
+
                         </el-row>
                     </div>
 
@@ -43,7 +61,7 @@
                                     node-key="id"
                                     default-expand-all>
                             <span class="custom-tree-node" slot-scope="{ node, data }">
-                                <span>
+                                <span @click="drawPoint(data.id, node)">
                                     <span v-bind:style="{ color: data.color }" class="el-icon-star-on"></span>
                                     {{ node.label }}
                                 </span>
@@ -94,7 +112,12 @@
                     children: [{
                         id: 9,
                         color: '#67C23A',
-                        label: '分区A'
+                        label: '分区A',
+                        children: [{
+                            id: 12,
+                            color: '#000000',
+                            label: '标签A',
+                        }]
                     },{
                         id: 10,
                         color: '#F56C6C',
@@ -118,13 +141,33 @@
                 refreshLocationInterval: null,
                 imageUrl: '',
                 file:'',
-                input: ''
+                input: '',
+
+                trackData:{
+                    // id: track
+                    12: [
+                        [10.0, 8.04],
+                        [8.0, 6.95],
+                        [13.0, 7.58],
+                        [9.0, 8.81],
+                        [11.0, 8.33],
+                        [14.0, 9.96],
+                        [6.0, 7.24],
+                        [4.0, 4.26],
+                        [12.0, 10.84],
+                        [7.0, 4.82],
+                        [5.0, 5.68]
+                    ]
+                }
             }
         },
         methods: {
 
+            locationReload() {
+                location.reload()
+            },
 
-            //第一张图数据
+            //第一张图数据: 柱形图
             drawLine() {
                 // 基于准备好的dom，初始化echarts实例
                 let myChart = echarts.init(document.getElementById('firstChart-container'))
@@ -158,6 +201,7 @@
                 });
             },
 
+            //第二张图数据: 折线图
             drawCircle() {
                 // 基于准备好的dom，初始化echarts实例
                 let myChart = echarts.init(document.getElementById('secondChart-container'))
@@ -182,6 +226,79 @@
                     }]
                 });
             },
+
+            //第三张图数据: 轨迹图
+            drawPoint(id, node) {
+                if (!node.isLeaf) {
+                    return
+                }
+                let track = this.trackData[id]
+                let nodes = []
+                let edges = []
+                let cnt = 0
+                for (let p of track) {
+                    if (cnt) {
+                        edges.push([
+                            {
+                                coord: [nodes[cnt - 1][0], nodes[cnt - 1][1]]
+                            }, {
+                                coord: [p[0], p[1]]
+                            }
+                        ])
+                    }
+                    nodes.push([p[0], p[1]])
+                    cnt++
+                }
+
+                let nodesInUse = []
+                let edgesInUse = []
+
+                let myChart = echarts.init(document.getElementById('location-container'))
+
+                let appliedCnt = 0
+
+                let int = window.setInterval(() => {
+                    if (appliedCnt >= nodes.length) {
+                        window.clearInterval(int)
+                    }
+                    nodesInUse.push(nodes[appliedCnt])
+                    if (appliedCnt) {
+                        edgesInUse.push(edges[appliedCnt - 1])
+                    }
+                    appliedCnt++
+                    // 绘制图表
+                    myChart.setOption({
+                        grid: [
+                            {x: '7%', y: '7%', width: '100%', height: '100%'}
+                        ],
+                        xAxis: [
+                            {gridIndex: 0, min: 0, max: 20, show: false}
+                        ],
+                        yAxis: [
+                            {gridIndex: 0, min: 0, max: 15, show: false}
+                        ],
+                        tooltip: {
+                            formatter: '({c})'
+                        },
+                        series: [
+                            {
+                                type: 'scatter',
+                                data: nodesInUse,
+                                markLine: {
+                                    data: edgesInUse,
+                                    lineStyle: {
+                                        type: 'dashed',
+                                        width: 3
+                                    },
+                                    symbolSize: 20,
+                                    symbol: ['none', 'arrow']
+                                }
+                            }
+                        ]
+                    });
+                }, 900)
+            },
+
 
             handleAvatarSuccess(res, file) {
                 let preview = document.querySelector('#location-container');
@@ -262,6 +379,7 @@
 
             this.drawLine()
             this.drawCircle()
+
 
             this.locationChart = echarts.init(document.getElementById('location-container'))
             // this.locationChart.showLoading()

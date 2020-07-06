@@ -367,7 +367,12 @@
                     children: [{
                         id: 9,
                         color: '#67C23A',
-                        label: '分区A'
+                        label: '分区A',
+                        children: [{
+                            id: 12,
+                            color: '#000000',
+                            label: '标签A'
+                        }]
                     },{
                         id: 10,
                         color: '#F56C6C',

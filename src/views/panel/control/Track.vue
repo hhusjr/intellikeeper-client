@@ -42,6 +42,8 @@
                 </el-table-column>
             </el-table>
         </el-col>
+
+
         <el-col :span="16" style="padding: 20px;">
             <div id="track-container"></div>
         </el-col>
@@ -209,9 +211,7 @@
 </script>
 
 <style scoped>
-#track-container {
-    height: 400px;
-}
+#track-container {height: 400px;}
 
 .box-card{width: 480px;}
 
