@@ -1,11 +1,12 @@
 <template>
     <div>
+
         <div class="toolbar">
-            <el-row :gutter="10">
-                <el-col :xs="10" :sm="6" :md="4" :lg="3" :xl="1">
+            <el-row :gutter="15">
+                <el-col :span="3">
                     <el-button @click="getTableData" class="fill-btn el-icon-refresh" type="primary">刷新</el-button>
                 </el-col>
-                <el-col :xs="10" :sm="6" :md="4" :lg="3" :xl="1">
+                <el-col :span="3">
                     <el-button @click="newBaseDialog = true" class="fill-btn el-icon-add-location" type="success">新增基站</el-button>
                 </el-col>
             </el-row>
@@ -155,7 +156,7 @@
                         })
                     }
                 }).catch(() => {
-                    this.$alert('表格数据加载失败，请重试！', '加载失败')
+                    // this.$alert('表格数据加载失败，请重试！', '加载失败')
                 })
             },
 

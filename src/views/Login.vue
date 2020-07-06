@@ -80,7 +80,7 @@
                         })
 
                         vm.$router.push({
-                            path: '/panel'
+                            path: '/panel/monitor'
                         })
                     }).catch(() => {
                         vm.$alert('请检查手机号与验证码。', '登陆失败')
@@ -91,7 +91,7 @@
         'beforeCreate'() {
             document.documentElement.className = 'login'
         },
-        'data'() {
+        'data'(){
             let validatePhone = (rule, value, callback) => {
                 if (!value) {
                     return callback(new Error('手机号码不能为空'))
