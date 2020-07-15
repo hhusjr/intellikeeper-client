@@ -8,7 +8,6 @@ import TagConfiguration from '@/views/panel/basic/TagConfiguration'
 import ReaderConfiguration from '@/views/panel/basic/ReaderConfiguration'
 import TriggerConfiguration from '@/views/panel/global/TriggerConfiguration'
 import CallbackConfiguration from '@/views/panel/global/CallbackConfiguration'
-import Monitor from '@/views/panel/control/Monitor'
 import Track from '@/views/panel/control/Track'
 import WarningRecord from '@/views/panel/control/WarningRecord'
 import Dashboard from '@/views/panel/Dashboard'
@@ -22,6 +21,7 @@ const router = new VueRouter({
         {
             path: '/',
             component: Panel,
+            redirect: '/panel',
         },
         {
             path: '/login',
@@ -32,12 +32,8 @@ const router = new VueRouter({
             component: Panel,
             children: [
                 {
-                    path: 'dashboard',
+                    path: '',
                     component: Dashboard
-                },
-                {
-                    path: 'monitor',
-                    component: Monitor
                 },
                 {
                     path: 'base-configuration',
@@ -73,18 +69,18 @@ const router = new VueRouter({
     ]
 })
 
-// router.beforeEach((to, from, next) => {
-//     if (to.path === '/login') {
-//         next()
-//     } else {
-//         let token = localStorage.getItem('Authorization')
-//
-//         if (token === null || token === '') {
-//             next('/login')
-//         } else {
-//             next()
-//         }
-//     }
-// })
+router.beforeEach((to, from, next) => {
+    if (to.path === '/login') {
+        next()
+    } else {
+        let token = localStorage.getItem('Authorization')
+
+        if (token === null || token === '') {
+            next('/login')
+        } else {
+            next()
+        }
+    }
+})
 
 export default router

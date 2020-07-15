@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="content-body">
         <div class="toolbar">
             <el-row :gutter="15">
                 <el-col :span="3">
@@ -79,7 +79,7 @@
                 :visible.sync="testDialogVisible"
                 width="30%">
             <span>测试触发器是否工作正常。请选择一个标签，测试该标签丢失后触发该触发器的情况。</span>
-            <el-tree :data="classifiedTags" @node-click="handleNodeClick"></el-tree>
+            <ClassifiedTags v-on:nodeClick="handleNodeClick"></ClassifiedTags>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="testDialogVisible = false">取 消</el-button>
                 <el-button type="primary" @click="confirmNodeClick">确 定</el-button>
@@ -94,10 +94,12 @@
     import qs from 'qs'
     import moment from 'moment'
     import TriggerCustomize from '@/components/TriggerCustomize'
+    import ClassifiedTags from '@/components/ClassifiedTags'
 
     export default {
         name: 'BaseConfiguration',
         components: {
+            ClassifiedTags,
             'TriggerCustomize': TriggerCustomize
         },
         methods: {
@@ -135,7 +137,7 @@
             },
 
             'handleNodeClick'(data) {
-                if ('tid' in data) {
+                if (data['type'] === 'tag') {
                     this.chosenTagId = data.id
                 }
             },
@@ -152,10 +154,19 @@
                 this.chosenTagId = -1
                 this.chosenTriggerId = -1
 
+                let loading = this.$loading({
+                    lock: true,
+                    text: '处理中...',
+                    spinner: 'el-icon-loading',
+                    background: 'rgba(0, 0, 0, 0.7)'
+                })
+
                 api.get(urls.trigger + chosenTriggerId + '/test-trigger/?tag=' + chosenTagId).then(() => {
                     this.$alert('请检查触发结果。', '操作成功！')
                 }).catch(() => {
                     this.$alert('处理失败，请重试！', '处理失败')
+                }).finally(() => {
+                    loading.close()
                 })
             },
 
@@ -184,7 +195,6 @@
             return {
                 tableData: [],
                 testDialogVisible: false,
-                classifiedTags: [],
                 chosenTagId: -1,
                 chosenTriggerId: -1,
                 methods: {
@@ -199,43 +209,6 @@
         },
         created() {
             this.getTableData()
-
-            api.get(urls.tag + 'classified/').then((response) => {
-                let treeStructure = [{
-                    label: '我的基站',
-                    children: []
-                }]
-                for (let device_id in response.data['tags']) {
-                    if (!Object.prototype.hasOwnProperty.call(response.data['tags'], device_id)) {
-                        continue
-                    }
-                    let node = {
-                        label: response.data.devices[device_id].name,
-                        children: []
-                    }
-                    treeStructure[0].children.push(node)
-                    for (let tag of response.data['tags'][device_id]) {
-                        node.children.push({
-                            label: tag.name,
-                            tid: tag.tid,
-                            id: tag.id
-                        })
-                    }
-                }
-                this.classifiedTags = treeStructure
-            })
         }
     }
 </script>
-
-<style scoped>
-    .toolbar {
-        padding: 5px;
-        background: #d8d8d9;
-    }
-
-    .fill-btn {
-        display: block;
-        width: 100%;
-    }
-</style>

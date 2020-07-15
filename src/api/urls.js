@@ -1,4 +1,4 @@
-const ROOT_SERVER = 'http://192.168.0.2:8000';
+const ROOT_SERVER = 'http://localhost:8000';
 
 export default {
     login: {
@@ -9,5 +9,7 @@ export default {
     device: ROOT_SERVER + '/devices/',
     tag: ROOT_SERVER + '/tags/',
     trigger: ROOT_SERVER + '/triggers/',
-    reader: ROOT_SERVER + '/readers/'
+    reader: ROOT_SERVER + '/readers/',
+    tagCategory: ROOT_SERVER + '/tag-categories/',
+    event: ROOT_SERVER + '/events/'
 }

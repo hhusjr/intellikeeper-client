@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="content-body">
         <el-row :gutter="20">
         <el-col :span="8">
             <el-table

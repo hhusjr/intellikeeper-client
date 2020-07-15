@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="content-body">
 
         <div class="toolbar">
             <el-row :gutter="15">
@@ -17,7 +17,7 @@
                 style="width: 100%">
             <el-table-column
                     label="基站编号"
-                    prop="uid"
+                    prop="device_id"
                     sortable
                     width="100px">
             </el-table-column>
@@ -28,12 +28,12 @@
                     width="100px">
                 <template slot-scope="scope">
                     <el-tag v-if="scope.row.is_online === -1">查询中</el-tag>
-                    <el-tag type="success" v-if="scope.row.is_online === 1">在线</el-tag>
-                    <el-tag type="info" v-if="scope.row.is_online === 0">离线</el-tag>
+                    <el-tag type="success" v-if="scope.row.is_online">在线</el-tag>
+                    <el-tag type="info" v-else>离线</el-tag>
                 </template>
             </el-table-column>
             <el-table-column
-                    label="激活"
+                    label="检测"
                     prop="is_active"
                     sortable
                     width="100px">
@@ -75,7 +75,7 @@
             <el-form v-model="newBaseData" label-position="left" label-width="100px" ref="newBaseInfo" status-icon>
                 <el-form-item label="基站编号" prop="uid">
                     <el-input autocomplete="off" size="large" type="digit"
-                              v-model="newBaseData.uid"></el-input>
+                              v-model="newBaseData.deviceId"></el-input>
                 </el-form-item>
                 <el-form-item label="基站名称" prop="name">
                     <el-input autocomplete="off" size="large" type="text"
@@ -95,7 +95,7 @@
 
         <el-dialog
                 :visible.sync="verifyingConnectionDialog"
-                title="正在校验连接..."
+                title="创建中..."
                 width="220px">
             <el-progress type="circle" :percentage="percentage" status="warning"></el-progress>
         </el-dialog>
@@ -133,30 +133,16 @@
                     for (let item of response.data) {
                         this.tableData.push({
                             'id': item['id'],
-                            'uid': item['uid'],
+                            'device_id': item['device_id'],
                             'name': item['name'],
                             'created': moment(item['created']).format('YYYY-MM-DD HH:mm:ss'),
                             'location': item['location'],
                             'is_active': item['is_active'],
-                            'is_online': -1
-                        })
-                    }
-
-                    for (let i = 0; i < this.tableData.length; i++) {
-                        let item = this.tableData[i]
-                        api.get(urls.device + item.id + '/handshake/').then((response) => {
-                            if (response.data.status) {
-                                item.is_online = 1
-                            } else {
-                                item.is_online = 0
-                            }
-                            this.$set(this.tableData, i, item)
-                        }).catch(() => {
-                            item.is_online = 0
+                            'is_online': item['is_online']
                         })
                     }
                 }).catch(() => {
-                    // this.$alert('表格数据加载失败，请重试！', '加载失败')
+                    this.$alert('表格数据加载失败，请重试！', '加载失败')
                 })
             },
 
@@ -173,7 +159,7 @@
                 }, 100);
 
                 api.post(urls.device, qs.stringify({
-                    uid: this.newBaseData.uid,
+                    device_id: this.newBaseData.deviceId,
                     name: this.newBaseData.name,
                     location: this.newBaseData.location
                 })).then(() => {
@@ -181,7 +167,7 @@
                     this.getTableData()
                     window.clearInterval(counter)
                 }).catch((response) => {
-                    this.$alert(response.uid[0])
+                    this.$alert(response['device_id'][0])
                     window.clearInterval(counter)
                     this.verifyingConnectionDialog = false
                     this.newBaseDialog = true
@@ -193,7 +179,7 @@
                 tableData: [],
                 newBaseDialog: false,
                 newBaseData: {
-                    uid: '',
+                    deviceId: '',
                     name: '',
                     location: ''
                 },
@@ -207,15 +193,3 @@
         }
     }
 </script>
-
-<style scoped>
-    .toolbar {
-        padding: 5px;
-        background: #d8d8d9;
-    }
-
-    .fill-btn {
-        display: block;
-        width: 100%;
-    }
-</style>

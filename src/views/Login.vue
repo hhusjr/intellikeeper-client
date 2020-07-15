@@ -80,7 +80,7 @@
                         })
 
                         vm.$router.push({
-                            path: '/panel/monitor'
+                            path: '/panel/'
                         })
                     }).catch(() => {
                         vm.$alert('请检查手机号与验证码。', '登陆失败')
